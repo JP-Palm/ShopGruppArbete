@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, current_app, request, redirect, url_for, flash
+from .services import getCategory, getTrendingCategories, getProduct, getTrendingProducts, getAllCategories, addCategory, addProduct, deleteCategory, deleteProduct, updateCategory, updateProduct
 from flask_security import roles_accepted
-from models import User, db,Subscriber
-from .services import getCategory, getTrendingCategories, getProduct, getTrendingProducts, getAllCategories, addCategory, addProduct
 
 productBluePrint = Blueprint('product', __name__)
 
@@ -20,21 +19,6 @@ def category(id):
 def product(id):
     product = getProduct(id)
     return render_template('products/product.html', product=product)
-
-@productBluePrint.route('/subscribe', methods=['POST'])
-def subscribe():
-    email = request.form.get('email')
-    #print(email)
-    existing_subscriber = Subscriber.query.filter_by(email=email).first()
-    if existing_subscriber:
-        flash('Email already used. Please choose another one.', 'error')
-    else:
-        new_subscriber = Subscriber(email=email, active=True)
-        db.session.add(new_subscriber)
-        db.session.commit()
-        flash('Subscription successful', 'success')
-
-        return 'Welcome to the Group3 family! 🎉 Get ready for a delightful dose of inspiration, insights, and exclusive content delivered straight to your inbox.'
 
 @productBluePrint.route('/admin/catalog')
 def admin_catalog():
