@@ -1,4 +1,4 @@
-from models import db, Category, Product
+from models import db, Category, Product, Supplier
 
 def getTrendingCategories():
     return Category.query.order_by(Category.CategoryID.desc()).paginate(page=1,per_page=4,error_out=False).items
@@ -15,21 +15,21 @@ def getTrendingProducts():
 def getAllCategories():
     return Category.query.all()
 
-# def getAllSuppliers():
-#     return Supplier.query.all()
+def getAllSuppliers():
+    return Supplier.query.all()
 
 def addCategory(name, description):
     new_category = Category(CategoryName=name, Description=description)
     db.session.add(new_category)
     db.session.commit()
 
-def addProduct(name, category_id, unit_price, units_in_stock):
+def addProduct(name, category_id, unit_price, units_in_stock, supplier_id):
     new_product = Product(
         ProductName=name,
         CategoryId=category_id,
+        SupplierID=supplier_id, 
         UnitPrice=unit_price,
         UnitsInStock=units_in_stock
-        # Set other fields as needed
     )
     db.session.add(new_product)
     db.session.commit()
@@ -61,4 +61,5 @@ def deleteProduct(id):
     if product:
         db.session.delete(product)
         db.session.commit()
+        
         

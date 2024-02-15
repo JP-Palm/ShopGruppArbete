@@ -2,41 +2,6 @@
 {% block maincontent %}
 <div class="container mt-5">
     <h1>Admin Catalog</h1>
-    <div class="my-4">
-        <button class="btn btn-primary" data-toggle="modal" data-target="#addCategoryModal">Add Category</button>
-        <!-- Add Category Modal -->
-        <!-- Place the add category modal code here -->
-        <!-- Modal -->
-<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form id="addCategoryForm">
-            <div class="form-group">
-              <label for="categoryNameInput">Category Name</label>
-              <input type="text" class="form-control" id="categoryNameInput" name="category_name" required>
-            </div>
-            <div class="form-group">
-              <label for="categoryDescriptionInput">Description</label>
-              <textarea class="form-control" id="categoryDescriptionInput" name="description"></textarea>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary" form="addCategoryForm">Add Category</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-    </div>
     <div class="accordion" id="categoriesAccordion">
         {% for category in categories %}
         <div class="card">
@@ -54,13 +19,13 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             {{ product.ProductName }} - ${{ product.UnitPrice }}
                             <div>
-                                <button class="btn btn-secondary btn-sm" onclick="editProduct({{ product.ProductID }})">Edit</button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteProduct({{ product.ProductID }})">Delete</button>
+                                <a href="{{ url_for('product.edit_product', id=product.ProductID) }}" class="btn btn-secondary btn-sm">Edit</a>
+                                <a href="{{ url_for('product.delete_product', id=product.ProductID) }}" class="btn btn-danger btn-sm">Delete</a>
                             </div>
                         </li>
                         {% endfor %}
                         <li class="list-group-item">
-                            <button class="btn btn-sm btn-outline-primary" onclick="addProduct({{ category.CategoryID }})">Add Product</button>
+                            <a href="{{ url_for('product.add_product', category_id=category.CategoryID) }}" class="btn btn-sm btn-outline-primary">Add Product</a>
                         </li>
                     </ul>
                 </div>
@@ -69,7 +34,6 @@
         {% endfor %}
     </div>
 </div>
-
 <script>
 // Placeholder functions for CRUD operations
 // Implement AJAX calls here for a dynamic UI without page reloads

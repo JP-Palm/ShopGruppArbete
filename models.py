@@ -36,7 +36,7 @@ class Product(db.Model):
     __tablename__= "Products"
     ProductID: Mapped[int] = mapped_column(db.Integer, primary_key=True)
     ProductName: Mapped[str] = mapped_column(db.String(40), unique=False, nullable=False)
-    SupplierID: Mapped[int] = mapped_column(db.Integer, unique=False, nullable=False)
+    SupplierID: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('suppliers.SupplierID'), nullable=False)
     CategoryId: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('Categories.CategoryID'), nullable=False)
     QuantityPerUnit: Mapped[str] = mapped_column(db.String(20), unique=False, nullable=False)
     UnitPrice: Mapped[float] = mapped_column(db.Float, unique=False, nullable=False)
@@ -44,7 +44,14 @@ class Product(db.Model):
     UnitsOnOrder: Mapped[int] = mapped_column(db.Integer, unique=False, nullable=False)
     ReorderLevel: Mapped[int] = mapped_column(db.Integer, unique=False, nullable=False)
     Discontinued: Mapped[int] = mapped_column(db.Boolean, unique=False, nullable=False)
+    
 
+class Supplier(db.Model):
+    __tablename__ = 'suppliers'
+    SupplierID: Mapped[int] = mapped_column(db.Integer, primary_key=True)
+    SupplierName: Mapped[str] = mapped_column(db.String(255), nullable=False)
+    
+    Products: Mapped[list["Product"]] = relationship("Product", backref='Supplier',lazy=True)
 
 class Role(db.Model, RoleMixin):
     __tablename__ = "roles"
@@ -196,7 +203,13 @@ def seedData(app: Flask):
     addProduct(db,"Lakkalikri",	23,1	,"500 ml",	18.0000	,	57	,	0	,	20	,	0	)
     addProduct(db,"Original Frankfurter grne Soe",	12,2	,"12 boxes",	13.0000	,	32	,	0	,	15	,	0	)
     addProduct(db,"Handdesinfektion",	1,1	,"1",	12.0000	,	2	,	0	,	0	,	0	)
+    
+    for supplier_id in range(1, 31):  # Generates 30 suppliers (since highest supplier id currently 29)
+        supplier_name = "Supplier " + barnum.create_company_name()[0]  
+        addSupplier(db, supplier_id, supplier_name)
 
+    db.session.commit()
+    
 def mapNorthwindCategporyIdToThisDb(db: SQLAlchemy, northwind_category__id: int) -> int|None:
     name = ""
     if northwind_category__id == 1:
@@ -267,3 +280,11 @@ def AddRoleIfNotExists(name: str) -> None:
     role.name = name
     db.session.add(role)
     db.session.commit()
+
+def addSupplier(db, supplier_id, supplier_name):
+    # Check if the supplier already exists
+    exists = db.session.query(db.exists().where(Supplier.SupplierID == supplier_id)).scalar()
+    if not exists:
+        supplier = Supplier(SupplierID=supplier_id, SupplierName=supplier_name)
+        db.session.add(supplier)
+        db.session.commit()

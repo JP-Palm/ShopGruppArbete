@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, current_app, request, redirect, url_for, flash
-from .services import getCategory, getTrendingCategories, getProduct, getTrendingProducts, getAllCategories, addCategory, addProduct, deleteCategory, deleteProduct, updateCategory, updateProduct
+from flask import Blueprint, render_template, current_app, request, redirect, url_for, flash, jsonify
+from .services import getCategory, getTrendingCategories, getProduct, getTrendingProducts, getAllCategories, addCategory, addProduct, deleteCategory, deleteProduct, updateCategory, updateProduct, getAllSuppliers
 from flask_security import roles_accepted
 
 productBluePrint = Blueprint('product', __name__)
@@ -32,17 +32,17 @@ def add_product():
     if request.method == 'POST':
         product_name = request.form.get('product_name')
         category_id = request.form.get('category_id')
-#        supplier_id = 1 
+        supplier_id = request.form.get('supplier_id')  # Retrieve supplier_id from the form
         unit_price = request.form.get('unit_price')
         units_in_stock = request.form.get('units_in_stock')
-        # Call addProduct with the supplier_id
-        addProduct(product_name, category_id, unit_price, units_in_stock)
+        addProduct(product_name, category_id, unit_price, units_in_stock, supplier_id)
         flash('Product added successfully!')
         return redirect(url_for('.admin_catalog'))
     else:
         categories = getAllCategories()
-#        suppliers = getAllSuppliers()  
-        return render_template('admin/add_product.html', categories=categories)
+        suppliers = getAllSuppliers()  
+        return render_template('admin/add_product.html', categories=categories, suppliers=suppliers)
+
 
 @productBluePrint.route('/delete_product/<int:id>', methods=['GET', 'POST'])
 def delete_product(id):
@@ -74,9 +74,12 @@ def edit_product(id):
 def add_category():
     category_name = request.form.get('category_name')
     description = request.form.get('description')
-    addCategory(category_name, description)
-    flash('Category added successfully!')
-    return redirect(url_for('.admin_catalog'))
+    # Assuming addCategory function adds the category and returns a success indicator
+    success = addCategory(category_name, description)
+    if success:
+        return jsonify({'success': True, 'message': 'Category added successfully!'})
+    else:
+        return jsonify({'success': False, 'message': 'Failed to add category.'}), 400
 
 @productBluePrint.route('/delete_category/<int:id>', methods=['GET', 'POST'])
 def delete_category(id):
