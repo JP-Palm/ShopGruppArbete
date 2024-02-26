@@ -1,13 +1,14 @@
 from flask import Blueprint, request
 from flask import flash, render_template, redirect, url_for
-
-from .admin_services import create_newsletter, get_all_newsletter, get_newsletter, update_newsletter,get_newsletters_for_page
+from flask_security import login_required
+from .admin_services import create_newsletter, get_all_newsletter, get_newsletter, update_newsletter
 from .admin_services import send_newsletter as sender
 from views.forms import EditNewsletter
 
 admin_blueprint = Blueprint('admin', __name__)
 
 @admin_blueprint.route('/admin', methods = ['GET', 'POST'])
+@login_required
 def admin() -> str:
     if request.method == 'POST':
         if 'product_name_search' in request.form:
@@ -18,7 +19,8 @@ def admin() -> str:
     return render_template('admin/admin.html')
 
 # @admin_blueprint.route('/admin/newsletters', methods = ['GET', 'POST'])
-# def newsletters() -> str:
+# @login_required
+def newsletters() -> str:
 #     if request.method == 'POST':
 #         if 'product_name_search' in request.form:
 #             return redirect(url_for('product.products',
@@ -44,6 +46,7 @@ def newsletters():
     return render_template('admin/newsletters.html', newsletters=newsletters)
 
 @admin_blueprint.route('/admin/newsletter/new', methods = ['GET', 'POST'])
+@login_required
 def new_newsletter() -> str:
     if request.method == 'POST':
         if 'product_name_search' in request.form:
@@ -58,6 +61,7 @@ def new_newsletter() -> str:
                         )
 
 @admin_blueprint.route('/admin/newsletter/<newsletter_id>', methods = ['GET', 'POST'])
+@login_required
 def edit_newsletter(newsletter_id: int = None) -> str:
     newsletter = get_newsletter(newsletter_id)
     if request.method == 'POST':
@@ -75,6 +79,7 @@ def edit_newsletter(newsletter_id: int = None) -> str:
                            form = form)
 
 @admin_blueprint.route('/admin/newsletters/send/<newsletter_id>', methods = ['GET', 'POST'])
+@login_required
 def send_newsletter(newsletter_id: int) -> str:
     if request.method == 'POST':
         if 'product_name_search' in request.form:
