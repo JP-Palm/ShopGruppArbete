@@ -62,7 +62,6 @@ def product(id):
 
 @productBluePrint.route('/admin/catalog', methods = ['GET', 'POST'])
 @login_required
-@productBluePrint.route('/admin/catalog')
 def admin_catalog():
     if request.method == 'POST':
         if 'product_name_search' in request.form:
