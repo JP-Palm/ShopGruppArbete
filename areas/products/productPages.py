@@ -78,8 +78,7 @@ def admin_catalog():
     # Sort products within each category!!!
     for category in categories:
         category.Products.sort(key=lambda x: getattr(x, sort_by), reverse=(sort_order == 'desc'))
-    
-    # Paginate products for each category
+
     for category in categories:
         total_products = len(category.Products)
         num_pages = math.ceil(total_products / per_page)
@@ -88,7 +87,6 @@ def admin_catalog():
         start_index = (page - 1) * per_page
         end_index = start_index + per_page
         category.Products = category.Products[start_index:end_index]
-        # Pass sorting parameters to each category
         category.sort_by = sort_by
         category.sort_order = sort_order
     
