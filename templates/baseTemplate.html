@@ -40,15 +40,15 @@
                 </ul>
                 <ul class="header-links pull-right">
                     <partial name="_LoginPartial" />
-                    {% if not current_user %}
-                        <li><a href="{{ url_for('auth.register') }}">Register</a></li>
-                        <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    {% if not current_user.roles %}
+                        <li><a href="{{ url_for('security.register') }}">Register</a></li>
+                        <li><a href="{{ url_for('security.login') }}">Login</a></li>
                     {% else %}
-                        <li><a href="#">Logout</a></li>
+                        <li><a href="{{ url_for('security.logout') }}">Logout</a></li>
                     {% endif %}
-                    {# {% if 'Admin' in user_roles %} Add when login is implemented#}
+                    {% if "Admin" in current_user.roles%} 
                         <li><a href="{{ url_for('admin.admin') }}">Admin</a></li>
-                    {# {% endif %} #}
+                    {% endif %} 
                 </ul>
             </div>
         </div>

@@ -58,3 +58,7 @@ def send_newsletter(newsletter_id: int) -> None:
         db.session.commit()
         flash(f'Newsletter #{newsletter_id} sent', 'message')
     
+def get_newsletters_for_page(page, per_page):
+ 
+    newsletters = Newsletter.query.paginate(page=page, per_page=per_page)
+    return newsletters
