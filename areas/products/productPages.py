@@ -1,7 +1,11 @@
 from flask import Blueprint, render_template, current_app, request, redirect, url_for, flash
+
+from flask_security import roles_accepted, login_required
+from models import User, db,Subscriber
 from flask_security import roles_accepted
 from models import User, db, Subscriber
 import math
+
 from .services import (get_products,
                        getCategory,
                        getCategoryname,
@@ -55,6 +59,9 @@ def product(id):
     product = getProduct(id)
     return render_template('products/product.html', product=product)
 
+
+@productBluePrint.route('/admin/catalog', methods = ['GET', 'POST'])
+@login_required
 @productBluePrint.route('/admin/catalog')
 def admin_catalog():
     if request.method == 'POST':
@@ -94,6 +101,7 @@ def admin_catalog():
 
 
 @productBluePrint.route('/add_product', methods=['GET', 'POST'])
+@login_required
 def add_product():
     if request.method == 'POST':
         if 'product_name_search' in request.form:
@@ -113,6 +121,7 @@ def add_product():
         return render_template('admin/add_product.html', categories=categories)
 
 @productBluePrint.route('/delete_product/<int:id>', methods = ['GET', 'POST'])
+@login_required
 def delete_product(id):
     if request.method == 'POST':
         if 'product_name_search' in request.form:
@@ -127,6 +136,7 @@ def delete_product(id):
     return redirect(url_for('.admin_catalog'))
 
 @productBluePrint.route('/confirm_delete_product/<int:id>', methods = ['GET', 'POST'])
+@login_required
 def confirm_delete_product(id):
     if request.method == 'POST':
         if 'product_name_search' in request.form:
@@ -138,6 +148,7 @@ def confirm_delete_product(id):
     return render_template('admin/confirm_delete_product.html', product=product)
 
 @productBluePrint.route('/edit_product/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_product(id):
     product = getProduct(id)
     if request.method == 'POST':
@@ -160,6 +171,7 @@ def edit_product(id):
 
 
 @productBluePrint.route('/add_category', methods=['GET', 'POST'])
+@login_required
 def add_category():
     if request.method == 'POST':
         if 'product_name_search' in request.form:
@@ -181,6 +193,7 @@ def add_category():
 
 
 @productBluePrint.route('/delete_category/<int:id>', methods=['GET', 'POST'])
+@login_required
 def delete_category(id):
     if request.method == 'POST':
         if 'product_name_search' in request.form:
@@ -200,6 +213,7 @@ def delete_category(id):
 
 
 @productBluePrint.route('/confirm_delete_category/<int:id>', methods = ['GET', 'POST'])
+@login_required
 def confirm_delete_category(id):
     if request.method == 'POST':
         if 'product_name_search' in request.form:
@@ -212,6 +226,7 @@ def confirm_delete_category(id):
 
 
 @productBluePrint.route('/edit_category/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_category(id):
     category = getCategory(id)
     if request.method == 'POST':
