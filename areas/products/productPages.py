@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, current_app, request, redirect, url_for, flash
 from flask_security import roles_accepted
-from models import User, db,Subscriber
+from models import User, db, Subscriber
 from .services import (get_products,
                        getCategory,
                        getCategoryname,
@@ -13,8 +13,7 @@ from .services import (get_products,
                        updateCategory, 
                        updateProduct, 
                        deleteCategory, 
-                       deleteProduct, 
-                       )
+                       deleteProduct)
 
 productBluePrint = Blueprint('product', __name__)
 
@@ -55,7 +54,7 @@ def product(id):
     product = getProduct(id)
     return render_template('products/product.html', product=product)
 
-@productBluePrint.route('/admin/catalog', methods = ['GET', 'POST'])
+@productBluePrint.route('/admin/catalog')
 def admin_catalog():
     if request.method == 'POST':
         if 'product_name_search' in request.form:
@@ -67,9 +66,32 @@ def admin_catalog():
     if not current_app.config.get('TEMP_ADMIN_ACCESS', False):
         return "Access Denied", 403
     
+    sort_by = request.args.get('sort_by', 'ProductName')
+    sort_order = request.args.get('sort_order', 'asc')    
+    page = request.args.get('page', 1, type=int)          
+    
     categories = getAllCategories()
 
-    return render_template('admin/catalog.html', categories=categories)
+    per_page = 10 
+    
+    # Sort products within each category!!!
+    for category in categories:
+        category.Products.sort(key=lambda x: getattr(x, sort_by), reverse=(sort_order == 'desc'))
+    
+    # Paginate products for each category
+    for category in categories:
+        total_products = len(category.Products)
+        num_pages = math.ceil(total_products / per_page)
+        category.page = page
+        category.num_pages = num_pages
+        start_index = (page - 1) * per_page
+        end_index = start_index + per_page
+        category.Products = category.Products[start_index:end_index]
+        # Pass sorting parameters to each category
+        category.sort_by = sort_by
+        category.sort_order = sort_order
+    
+    return render_template('admin/catalog.html', categories=categories, sort_by=sort_by, sort_order=sort_order, page=page)
 
 
 @productBluePrint.route('/add_product', methods=['GET', 'POST'])
