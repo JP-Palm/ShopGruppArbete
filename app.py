@@ -9,6 +9,7 @@ from flask_security import SQLAlchemyUserDatastore, Security
 from flask_security import auth_required, logout_user, roles_accepted
 from os import environ
 
+from areas.auth.auth_pages import auth_blueprint
 from areas.admin.admin_pages import admin_blueprint
 from areas.products.productPages import productBluePrint
 from areas.site.sitePages import siteBluePrint
@@ -46,6 +47,7 @@ mail.init_app(app)
 app.register_blueprint(siteBluePrint)
 app.register_blueprint(productBluePrint)
 app.register_blueprint(admin_blueprint)
+app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
 # Seeding Command
 @click.command('seed-db')
