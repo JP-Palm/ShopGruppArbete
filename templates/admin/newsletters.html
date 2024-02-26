@@ -15,7 +15,7 @@
         <th class="text-center">Edit</th>
         <th class="text-center">Send</th>
     </tr>
-    {% for newsletter in newsletters %}
+    {% for newsletter in newsletters.items %}
     <tr>
         <td>{{ newsletter.id }}</td>
         <td>{{ newsletter.subject }}</td>
@@ -42,6 +42,28 @@
     </tr>
     {% endfor %}
 </table>
+
+<!-- Pagination links -->
+<div class="pagination">
+    {% if newsletters.has_prev %}
+    <a href="{{ url_for('admin.newsletters', page=newsletters.prev_num) }}">Previous</a>
+    {% endif %}
+    {% for num in newsletters.iter_pages() %}
+    {% if num %}
+    {% if num == newsletters.page %}
+    <strong>{{ num }}</strong>
+    {% else %}
+    <a href="{{ url_for('admin.newsletters', page=num) }}">{{ num }}</a>
+    {% endif %}
+    {% else %}
+    <span class="ellipsis">...</span>
+    {% endif %}
+    {% endfor %}
+    {% if newsletters.has_next %}
+    <a href="{{ url_for('admin.newsletters', page=newsletters.next_num) }}">Next</a>
+    {% endif %}
+</div>
+
 <a href="{{ url_for('admin.new_newsletter') }}" class="button">New newsletter</a>
 {% endblock %}
 {% block scripts %}

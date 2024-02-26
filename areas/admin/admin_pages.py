@@ -18,20 +18,32 @@ def admin() -> str:
                                 )
     return render_template('admin/admin.html')
 
-@admin_blueprint.route('/admin/newsletters', methods = ['GET', 'POST'])
-@login_required
+# @admin_blueprint.route('/admin/newsletters', methods = ['GET', 'POST'])
+# @login_required
 def newsletters() -> str:
+#     if request.method == 'POST':
+#         if 'product_name_search' in request.form:
+#             return redirect(url_for('product.products',
+#                                     q = request.form['product_name_search']
+#                                     )
+#                                 )
+
+#     all_newsletters = get_all_newsletter()
+#     return render_template('admin/newsletters.html',
+#                            newsletters = all_newsletters
+#                            )
+@admin_blueprint.route('/admin/newsletters', methods=['GET', 'POST'])
+def newsletters():
+    page = request.args.get('page', 1, type=int)
+    per_page = 10 
+
     if request.method == 'POST':
         if 'product_name_search' in request.form:
-            return redirect(url_for('product.products',
-                                    q = request.form['product_name_search']
-                                    )
-                                )
+            return redirect(url_for('product.products', q=request.form['product_name_search']))
 
-    all_newsletters = get_all_newsletter()
-    return render_template('admin/newsletters.html',
-                           newsletters = all_newsletters
-                           )
+    newsletters = get_newsletters_for_page(page, per_page)
+
+    return render_template('admin/newsletters.html', newsletters=newsletters)
 
 @admin_blueprint.route('/admin/newsletter/new', methods = ['GET', 'POST'])
 @login_required
