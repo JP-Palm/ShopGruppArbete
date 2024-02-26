@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, current_app, request, redirect, url_for, flash
 from flask_security import roles_accepted
 from models import User, db, Subscriber
+import math
 from .services import (get_products,
                        getCategory,
                        getCategoryname,
