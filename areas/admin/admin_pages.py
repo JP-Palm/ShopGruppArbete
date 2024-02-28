@@ -1,7 +1,6 @@
 from flask import Blueprint, request
 from flask import render_template, redirect, url_for
 from flask_security import roles_required
-from areas.auth.auth_pages import admin_required
 from areas.admin.admin_services import create_newsletter, get_newsletter, update_newsletter,get_newsletters_for_page
 from areas.admin.admin_services import send_newsletter as sender
 from views.forms import EditNewsletter

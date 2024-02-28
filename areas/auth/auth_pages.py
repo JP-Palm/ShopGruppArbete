@@ -19,16 +19,16 @@ def register():
 
         if password != confirm_password:
             flash('Passwords do not match!', 'danger')
-            return redirect(url_for('auth.register'))
+            return redirect(url_for('security.register'))
 
         if register_user(first_name, last_name, email, password):
             flash('Registration successful! Please log in.', 'success')
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('security.login'))
         else:
             flash('Email already registered.', 'danger')
-            return redirect(url_for('auth.register'))
+            return redirect(url_for('security.register'))
 
-    return render_template('auth/register.html')
+    return render_template('security/register.html')
 
 
 @auth_blueprint.route('/login', methods=['GET', 'POST'])
@@ -46,16 +46,16 @@ def login():
             return redirect(url_for('product.index'))
         else:
             flash('Login failed. Please try again.', 'danger')  
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('security.login'))
         
-    return render_template('auth/login.html')
+    return render_template('security/login.html')
 
 
 @auth_blueprint.route('/logout')
 def logout():
     logout_user()
     flash('You have been logged out.', 'success')
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('security.login'))
 
 
 def admin_required(f):
