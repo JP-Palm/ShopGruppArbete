@@ -3,13 +3,14 @@ from flask import flash
 from flask_mail import Message
 from sqlalchemy import select
 from werkzeug.datastructures import ImmutableMultiDict
-
 from extensions import mail
 from models import Newsletter, Subscriber, db
+
 
 def get_all_newsletter() -> list[Newsletter]:
     stmt = select(Newsletter)
     return db.session.execute(stmt).scalars().all()
+
 
 def create_newsletter() -> Newsletter:
     newsletter = Newsletter()
@@ -21,6 +22,7 @@ def create_newsletter() -> Newsletter:
     db.session.commit()
     return newsletter.id
 
+
 def update_newsletter(newsletter: Newsletter, edit_newsletter_form: ImmutableMultiDict) -> None:
     newsletter.subject = edit_newsletter_form['subject']
     newsletter.content = edit_newsletter_form['content']
@@ -28,11 +30,13 @@ def update_newsletter(newsletter: Newsletter, edit_newsletter_form: ImmutableMul
     db.session.add(newsletter)
     db.session.commit()
 
+
 def get_newsletter(newsletter_id: int) -> Newsletter|None:
     if not newsletter_id:
         return None
     stmt = select(Newsletter).where(Newsletter.id == newsletter_id)
     return db.session.execute(stmt).scalar()
+
 
 def send_newsletter(newsletter_id: int) -> None:
     stmt = select(Newsletter).where(Newsletter.id == newsletter_id)
@@ -58,6 +62,7 @@ def send_newsletter(newsletter_id: int) -> None:
         db.session.commit()
         flash(f'Newsletter #{newsletter_id} sent', 'message')
     
+
 def get_newsletters_for_page(page, per_page):
  
     newsletters = Newsletter.query.paginate(page=page, per_page=per_page)
