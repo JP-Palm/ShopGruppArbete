@@ -1,7 +1,9 @@
-from flask import Blueprint, render_template, current_app, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models import User, db,Subscriber
 
+
 siteBluePrint = Blueprint('site', __name__)
+
 
 @siteBluePrint.route('/contact', methods = ['GET', 'POST'])
 def contact() -> str:
@@ -13,6 +15,7 @@ def contact() -> str:
                                 )
      return render_template('site/contact.html')
 
+
 @siteBluePrint.route('/terms', methods = ['GET', 'POST'])
 def terms() -> str:
      if request.method == 'POST':
@@ -23,6 +26,7 @@ def terms() -> str:
                                 )
      return render_template('site/terms.html')
 
+
 @siteBluePrint.route('/about', methods = ['GET', 'POST'])
 def about() -> str:
      if request.method == 'POST':
@@ -32,6 +36,7 @@ def about() -> str:
                                     )
                                 )
      return render_template('site/about.html')
+
 
 @siteBluePrint.route('/subscribe', methods = ['GET', 'POST'])
 def subscribe():

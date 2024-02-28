@@ -1,7 +1,12 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
-from .auth_services import register_user, validate_login
+from flask_login import login_user, logout_user
+from functools import wraps
+from areas.auth.auth_services import register_user, validate_login
+from models import User
+
 
 auth_blueprint = Blueprint('auth', __name__, template_folder='templates')
+
 
 @auth_blueprint.route('/register', methods=['GET', 'POST'])
 def register():
@@ -32,14 +37,32 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        # Assuming validate_login returns a boolean indicating success, and a message
-        success, message = validate_login(email, password)
+        success, message, is_admin = validate_login(email, password)
         
         if success:
-            session['user_email'] = email  # Or set another appropriate session value
+            user = User.query.filter_by(email=email).first()
+            login_user(user)  
             flash('You were successfully logged in', 'success')
-            return redirect(url_for('index'))  # Redirect to a different page upon successful login
+            return redirect(url_for('product.index'))
         else:
-            flash(message, 'danger')  # Show error message from validation
+            flash('Login failed. Please try again.', 'danger')  
+            return redirect(url_for('auth.login'))
         
     return render_template('auth/login.html')
+
+
+@auth_blueprint.route('/logout')
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('auth.login'))
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get('is_admin') is not True:
+            flash('You need to be an admin to access this page.')
+            return redirect(url_for('product.index'))  
+        return f(*args, **kwargs)
+    return decorated_function

@@ -1,8 +1,7 @@
 import barnum
 from datetime import datetime
 from flask import Flask
-from flask_security import (auth_required,
-                            hash_password,
+from flask_security import (hash_password,
                             RoleMixin,
                             Security,
                             SQLAlchemyUserDatastore,
@@ -17,10 +16,13 @@ from sqlalchemy.orm import (DeclarativeBase,
                             )
 from typing import List
 
+
 class Base(DeclarativeBase):
     pass
 
+
 db = SQLAlchemy(model_class=Base)
+
 
 class Category(db.Model):
     __tablename__= "Categories"
