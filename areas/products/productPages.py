@@ -74,6 +74,13 @@ def product(id):
 
     product = getProduct(id)
     return render_template('products/product.html', product=product)
+    
+
+@productBluePrint.route('/category/<int:category_id>/product/<int:product_id>')
+def show_product_in_category(category_id, product_id):
+    category = getCategory(category_id)
+    product = getProduct(product_id)
+    return render_template('products/product.html', category=category, product=product)
 
 
 @productBluePrint.route('/admin/catalog', methods = ['GET', 'POST'])

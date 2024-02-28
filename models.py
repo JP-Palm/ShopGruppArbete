@@ -1,7 +1,8 @@
 import barnum
 from datetime import datetime
 from flask import Flask
-from flask_security import (hash_password,
+from flask_security import (auth_required,
+                            hash_password,
                             RoleMixin,
                             Security,
                             SQLAlchemyUserDatastore,
@@ -15,14 +16,12 @@ from sqlalchemy.orm import (DeclarativeBase,
                             relationship
                             )
 from typing import List
-
+import random, os
 
 class Base(DeclarativeBase):
     pass
 
-
 db = SQLAlchemy(model_class=Base)
-
 
 class Category(db.Model):
     __tablename__= "Categories"
@@ -46,7 +45,8 @@ class Product(db.Model):
     UnitsOnOrder: Mapped[int] = mapped_column(db.Integer, unique=False, nullable=False)
     ReorderLevel: Mapped[int] = mapped_column(db.Integer, unique=False, nullable=False)
     Discontinued: Mapped[int] = mapped_column(db.Boolean, unique=False, nullable=False)
-
+    Image: Mapped[str] = mapped_column(db.String(255), unique=False, nullable=True)
+    Description: Mapped[str] = mapped_column(db.String(200), unique=False, nullable=True)
 
 class Role(db.Model, RoleMixin):
     __tablename__ = "roles"
@@ -199,9 +199,6 @@ def seedData(app: Flask):
     addProduct(db,"Original Frankfurter grne Soe",	12,2	,"12 boxes",	13.0000	,	32	,	0	,	15	,	0	)
     addProduct(db,"Handdesinfektion",	1,1	,"1",	12.0000	,	2	,	0	,	0	,	0	)
 
-    add_subscribers()
-    add_newletter()
-
 def mapNorthwindCategporyIdToThisDb(db: SQLAlchemy, northwind_category__id: int) -> int|None:
     name = ""
     if northwind_category__id == 1:
@@ -235,7 +232,8 @@ def addProduct(db: SQLAlchemy,
                units_in_stock: int,
                units_on_order: int,
                reorder_level: int,
-               discontinued: int
+               discontinued: int,
+               description: str = None
                ) -> None:
     stmt = select(Product).where(Product.ProductName == name)
     a = db.session.execute(stmt).first()
@@ -250,6 +248,9 @@ def addProduct(db: SQLAlchemy,
         c.UnitsOnOrder = units_on_order
         c.ReorderLevel = reorder_level
         c.Discontinued = discontinued
+        c.Description = description
+        images = ['img/Products/product_1.png','img/Products/product_3.png','img/Products/product_5.png','img/Products/product_0000001212.png','img/Products/product_30057741.png','img/Products/product_80025566.png','img/Products/product_AA666712.png','img/Products/product06.png','img/Products/product08.png']
+        c.Image = random.choice(images)
 
         db.session.add(c)
         db.session.commit()
@@ -272,27 +273,3 @@ def AddRoleIfNotExists(name: str) -> None:
     role.name = name
     db.session.add(role)
     db.session.commit()
-
-def add_subscribers(minium_count: int = 3) -> None:
-    stmt = select(func.count()).select_from(Subscriber)
-    subscriber_count = db.session.execute(stmt).scalar()
-    if subscriber_count < minium_count:
-        adding = minium_count - subscriber_count
-        for _ in range(adding):
-            subscriber = Subscriber()
-            subscriber.email = barnum.create_email()
-            subscriber.active = True
-            db.session.add(subscriber)
-        db.session.commit()
-
-def add_newletter() -> None:
-    stmt = select(func.count()).select_from(Newsletter)
-    newsletter_count = db.session.execute(stmt).scalar()
-    if newsletter_count < 1:
-        newsletter = Newsletter()
-        newsletter.subject = 'A sample newsletter'
-        newsletter.content = 'This is a sample newsletter generated to test out the system.'
-        newsletter.last_edit = datetime.strptime('2024-02-13 10:15', '%Y-%m-%d %H:%M')
-        newsletter.is_sent = False
-        db.session.add(newsletter)
-        db.session.commit()

@@ -2,10 +2,11 @@
 {% block title %}Start{% endblock %}
 {% block maincontent %}
 
-
-
-{{ product.ProductName  }}
+<h1>{{ product.ProductName }}</h1>
+<p>Price: ${{ product.UnitPrice }}</p>
+<p>Quantity Per Unit: {{ product.QuantityPerUnit }}</p>
+<p>Description: {{ product.Description }} </p>
+<img src="{{ url_for('static', filename=product.Image) }}" alt="product.ProductID">
 
 
 {% endblock %}
-

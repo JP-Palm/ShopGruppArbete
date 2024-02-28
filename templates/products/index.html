@@ -55,14 +55,15 @@
                                 <div>{{ product.UnitPrice }}</div></div>
             
                             <div class="information">
-            
-                                <div class="name">{{ product.ProductName }}</div>
-            
+                                <div class="name">
+                                    <a href="{{ url_for('product.show_product_in_category', category_id=product.Category.CategoryID, product_id=product.ProductID) }}">{{ product.ProductName }}</a>
+                                </div>
                                 <div class="store">@Model.Color, @Model.Color</div>
             
                                 <a href="#" class="button">Purchase Product</a>
-            
+
                             </div> <!-- end information -->
+
                         </div> <!-- end container -->
                     </div>
                     
@@ -79,4 +80,3 @@
 
 
 {% endblock %}
-
