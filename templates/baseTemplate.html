@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,19 +39,16 @@
                     <li><a href="#"><i class="fa fa-map-marker"></i> Testgatan 122</a></li>
                 </ul>
                 <ul class="header-links pull-right">
-                    <!-- Check if user is not authenticated -->
-                    {% if not current_user.is_authenticated %}
-                        <li><a href="{{ url_for('auth.register') }}">Register</a></li>
-                        <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    <partial name="_LoginPartial" />
+                    {% if not current_user.roles %}
+                        <li><a href="{{ url_for('security.register') }}">Register</a></li>
+                        <li><a href="{{ url_for('security.login') }}">Login</a></li>
                     {% else %}
-                        <!-- User is authenticated, show Logout -->
-                        <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-                
-                        <!-- Check if user has Admin role -->
-                        {% if "Admin" in current_user.roles %}
-                            <li><a href="{{ url_for('admin.admin') }}">Admin</a></li>
-                        {% endif %}
+                        <li><a href="{{ url_for('security.logout') }}">Logout</a></li>
                     {% endif %}
+                    {% if "Admin" in current_user.roles%} 
+                        <li><a href="{{ url_for('admin.admin') }}">Admin</a></li>
+                    {% endif %} 
                 </ul>
             </div>
         </div>
