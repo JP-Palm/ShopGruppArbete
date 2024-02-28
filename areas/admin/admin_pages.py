@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from flask import render_template, redirect, url_for
+from flask_security import roles_required
 from areas.auth.auth_pages import admin_required
 from areas.admin.admin_services import create_newsletter, get_newsletter, update_newsletter,get_newsletters_for_page
 from areas.admin.admin_services import send_newsletter as sender
@@ -10,7 +11,7 @@ admin_blueprint = Blueprint('admin', __name__)
 
 
 @admin_blueprint.route('/admin', methods = ['GET', 'POST'])
-@admin_required
+@roles_required('Admin')
 def admin() -> str:
     if request.method == 'POST':
         if 'product_name_search' in request.form:
@@ -22,7 +23,7 @@ def admin() -> str:
 
 
 @admin_blueprint.route('/admin/newsletters', methods=['GET', 'POST'])
-@admin_required
+@roles_required('Admin')
 def newsletters():
     page = request.args.get('page', 1, type=int)
     per_page = 10 
@@ -37,7 +38,7 @@ def newsletters():
 
 
 @admin_blueprint.route('/admin/newsletter/new', methods = ['GET', 'POST'])
-@admin_required
+@roles_required('Admin')
 def new_newsletter() -> str:
     if request.method == 'POST':
         if 'product_name_search' in request.form:
@@ -53,7 +54,7 @@ def new_newsletter() -> str:
 
 
 @admin_blueprint.route('/admin/newsletter/<newsletter_id>', methods = ['GET', 'POST'])
-@admin_required
+@roles_required('Admin')
 def edit_newsletter(newsletter_id: int = None) -> str:
     newsletter = get_newsletter(newsletter_id)
     if request.method == 'POST':
@@ -72,7 +73,7 @@ def edit_newsletter(newsletter_id: int = None) -> str:
 
 
 @admin_blueprint.route('/admin/newsletters/send/<newsletter_id>', methods = ['GET', 'POST'])
-@admin_required
+@roles_required('Admin')
 def send_newsletter(newsletter_id: int) -> str:
     if request.method == 'POST':
         if 'product_name_search' in request.form:
