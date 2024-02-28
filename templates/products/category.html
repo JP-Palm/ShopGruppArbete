@@ -36,7 +36,10 @@
             
                             <div class="information">
             
-                                <div class="name">{{ product.ProductName }}</div>
+                                <div class="name">
+                                    <a href="{{ url_for('product.product', id=product.ProductID) }}">{{ product.ProductName }}</a>
+                                </div>
+
             
                                 <div class="store">@Model.Color, @Model.Color</div>
             
